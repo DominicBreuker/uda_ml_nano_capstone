@@ -6,39 +6,38 @@ April 5th, 2017
 ## I. Definition
 
 ### Project Overview
-Handwriting recognition has a long-standing history in machine learning research. During the 1980s, the first commercial tablet products have been released by companies such as Pencept, Linus and even Apple [^WIKI_TABLET]. As a consequence, research interest in online handwriting recognition - the problem of recognizing characters as users write them with a pen - soared [^TSW_1990]. Online handwriting recognition provides a plethora of information beyond the mere writing you see on the device. Systems recorded a time sequence of coordinates as the pen was moved over the device. With such a rich signal, algorithms performed reasonably well to provide a decent user experience [^RS_2000].
+Handwriting recognition has a long-standing history in machine learning research. During the 1980s, the first commercial tablet products have been released by companies such as Pencept, Linus and even Apple <sup>1</sup>. As a consequence, research interest in online handwriting recognition - the problem of recognizing characters as users write them with a pen - soared <sup>2</sup>. Online handwriting recognition provides a plethora of information beyond the mere writing you see on the device. Systems recorded a time sequence of coordinates as the pen was moved over the device. With such a rich signal, algorithms performed reasonably well to provide a decent user experience <sup>3</sup>.
 
-A more challenging problem though is offline handwriting recognition. In the offline scenario, you only have access to an image of the written text. This constraint gives rise to considerable additional complexity. The first problem is that handwritten characters, compared to characters printed by machines, tend to be noisy and ambiguous. As this problem in itself is challenging enough, the famous MNIST dataset was created. It consists of a set images of handwritten digits and is a subset of the NIST database, a database of handwritten text [^NIST_1995]. It kept researchers busy for decades until human-level performance was achieved [^WIKI_MNIST]. The second problem is that you typically do not get a single image per character but a scan of an entire document. Solutions to that problem include applying preprocessing techniques that segment text into lines, words and finally characters [^MB_2002], as well as training end-to-end neural networks with connectionist temporal classification layers [^GS_2009].
+A more challenging problem though is offline handwriting recognition. In the offline scenario, you only have access to an image of the written text. This constraint gives rise to considerable additional complexity. The first problem is that handwritten characters, compared to characters printed by machines, tend to be noisy and ambiguous. As this problem in itself is challenging enough, the famous MNIST dataset was created. It consists of a set images of handwritten digits and is a subset of the NIST database, a database of handwritten text <sup>4</sup>. It kept researchers busy for decades until human-level performance was achieved <sup>5</sup>. The second problem is that you typically do not get a single image per character but a scan of an entire document. Solutions to that problem include applying preprocessing techniques that segment text into lines, words and finally characters <sup>6</sup>, as well as training end-to-end neural networks with connectionist temporal classification layers <sup>7</sup>.
 
-While neural networks and deep learning in particular yielded significant improvements, offline handwriting recognition remains a challenge today. Research communities organize competitions to improve the techniques [^COMPETITION_2016] and startups a created that aim to provide commercial products in this field [^SEARCHINK].
+While neural networks and deep learning in particular yielded significant improvements, offline handwriting recognition remains a challenge today. Research communities organize competitions to improve the techniques <sup>8</sup> and startups a created that aim to provide commercial products in this field <sup>9</sup>.
 
 ### Problem Statement
-My goal for this project is to build a classifier for the MNIST dataset built with a convolutional neural network. That is, I focus on the first of the two challenges in offline handwriting recognition as described in the previous section. The classifier will be able to take an image of a handwritten digit from 0 to 9 as input and output the correct class. For the project, I will use the dataset from the Kaggle competition on MNIST and will benchmark myself against the Kaggle leaderboard [^KAGGLE_MNIST]. Kaggle prescribes the use of accuracy as the performance measure for this competition, which I will adopt for this reason.
+My goal for this project is to build a classifier for the MNIST dataset built with a convolutional neural network. That is, I focus on the first of the two challenges in offline handwriting recognition as described in the previous section. The classifier will be able to take an image of a handwritten digit from 0 to 9 as input and output the correct class. For the project, I will use the dataset from the Kaggle competition on MNIST and will benchmark myself against the Kaggle leaderboard <sup>10</sup>. Kaggle prescribes the use of accuracy as the performance measure for this competition, which I will adopt for this reason.
 
 I will put particular emphasis on the following deliverables:
 - The classifier will be based on a deep learning neural network architecture and should perform close to the best solutions on Kaggle. Baselines lie at 0.96829 accuracy for random forests 0.96557 for KNN. I aim to be considerably better than that. Best scores on the leaderboard are 1.0. Since the dataset is publicly available, it is very likely that these submissions are based on cheating. On the leaderboard, there is an indicator named "Something fishy is going on if you ..." at accuracy 0.99514 to indicate the score above which people likely cheat. There are 81 submissions above that level. I consider my model a success if I get into the Top100 below this bar. **Hence, I aim for a score at least as good as that of submission 181, which is 0.99229 at the time of writing.**
-- Visualizations can greatly facilitate understanding of convolutional neural networks [^ZF_2013]. To develop better understanding, I want to provide several visualizations that illustrate the inner workings and the effects of the models. I will provide three kinds of visualizations. First, **I will plot the weights of the first convolutional layer of my model.** Clear visual structures without any noise will indicate that the model converged properly [^CS231N]. Second, **I will visualize the activations of my layers after training.** They should be sparse and also exhibit clear structure if learning worked well [^CS231N]. Finally, **I will investigate in detail the examples that my model cannot classify correctly** to identify challenging features and opportunities for further improvements.
+- Visualizations can greatly facilitate understanding of convolutional neural networks <sup>11</sup>. To develop better understanding, I want to provide several visualizations that illustrate the inner workings and the effects of the models. I will provide three kinds of visualizations. First, **I will plot the weights of the first convolutional layer of my model.** Clear visual structures without any noise will indicate that the model converged properly <sup>12</sup>. Second, **I will visualize the activations of my layers after training.** They should be sparse and also exhibit clear structure if learning worked well <sup>12</sup>. Finally, **I will investigate in detail the examples that my model cannot classify correctly** to identify challenging features and opportunities for further improvements.
 - Deep learning models are useful only if you can bring them from a research environment into production. Therefore, **I will build a microservice that enables me to deploy my model into the cloud.** It will allow to submit images via a simple JSON API that returns the models prediction. Using Docker, I will package all dependencies, so that DevOps engineers would have an easy time deploying the model to a company's environment.
 
 
 ### Metrics
 I will use classification accuracy to measure the performance of my model for this project. Accuracy is measured as the fraction of examples for which the model predicts the correct class label. Class labels range from 0 to 9 - one for each digit. For example, if there are 100 example images and the model correctly predicts the class label for 85 of these, accuracy will be `85 / 100 = 0.85`. The best possibly achievable accuracy is 1.0. The worst accuracy possible is 0.0. As there are 10 classes, random guessing of the class label should result in an accuracy of about 0.1. Thus, any model should at least beat accuracy 0.1.
 
-As the problem is framed as a multi-class classification problem, not many alternatives to accuracy exist [^SKLEARN_CLASS_METRICS]. For example, Cohen's Kappa could be used instead to measure how much better the classifier is compared to random guessing. For problems in which random guessing would already produce high accuracies, Cohen's Kappa can avoid to mistakenly get too excited about classification performance. For the given problem though, random guessing accuracy (0.1) is considerably lower than what we aim for (> 0.99). Moreover, the Kaggle leaderboard evaluates accuracy, which is another reason to adopt this measure.
+As the problem is framed as a multi-class classification problem, not many alternatives to accuracy exist <sup>13</sup>. For example, Cohen's Kappa could be used instead to measure how much better the classifier is compared to random guessing. For problems in which random guessing would already produce high accuracies, Cohen's Kappa can avoid to mistakenly get too excited about classification performance. For the given problem though, random guessing accuracy (0.1) is considerably lower than what we aim for (> 0.99). Moreover, the Kaggle leaderboard evaluates accuracy, which is another reason to adopt this measure.
 
 ## II. Analysis
 
 ### Data Exploration
-Data from Kaggle comes conveniently in form of two CSV files, one for training and the other for testing [^KAGGLE_MNIST]. In the training dataset, there are 42.000 rows and 785 columns. Each row corresponds to one example digit. The first column is the class label (0-9), the remaining 784 columns are pixel values (0-255) of the `28 * 28 = 784` images of the corresponding handwritten digit. The test set contains 28.000 rows and 784 columns. For the test set, all `28 * 28 = 784` columns are pixel values (0-255) of the image. There is no class label available.
+Data from Kaggle comes conveniently in form of two CSV files, one for training and the other for testing <sup>10</sup>. In the training dataset, there are 42.000 rows and 785 columns. Each row corresponds to one example digit. The first column is the class label (0-9), the remaining 784 columns are pixel values (0-255) of the `28 * 28 = 784` images of the corresponding handwritten digit. The test set contains 28.000 rows and 784 columns. For the test set, all `28 * 28 = 784` columns are pixel values (0-255) of the image. There is no class label available.
 
-Note that the Kaggle MNIST dataset is different from the typical dataset used in the literature. Typically, the 70.000 images are split into a training set of 60.000 images and a test set of 10.000 images (e.g., in [^L_1998]). Thus, the MNIST problem on Kaggle is slightly harder than in the literature. A comparison of performance to models from the literature would be misleading.
+Note that the Kaggle MNIST dataset is different from the typical dataset used in the literature. Typically, the 70.000 images are split into a training set of 60.000 images and a test set of 10.000 images (e.g., in <sup>14</sup>). Thus, the MNIST problem on Kaggle is slightly harder than in the literature. A comparison of performance to models from the literature would be misleading.
 
 The class labels for the training dataset are evenly distributed. As you can see from the histogram below in Fig. 1, each of the 10 digits has approximately the same number of occurrences. Ass classification algorithms typically suffer from class imbalance, countermeasures would otherwise have been necessary.
 
 ![figure 1](images/fig1.png)
 
 *Fig. 1.: Class labels and the number of times they occur in the training dataset*
-<!-- ![google](https://yt3.ggpht.com/-v0soe-ievYE/AAAAAAAAAAI/AAAAAAAAAAA/OixOH_h84Po/s900-c-k-no-mo-rj-c0xffffff/photo.jpg) -->
 
 The dataset is very high quality needs no special cleaning. There are no missing class labels and obviously all pixel values are available for each image, i.e., no parts of images are occluded. Based on an initial screening, it is hard to assess if there are any outliers in the data (there could, e.g., be images that are not digit but letters, wrong class labels, ...). Due to the data's nature, you cannot identify outliers upfront. Instead, I will screen wrongly classified validation set images manually after building a classification model to keep the effort manageable. If there were any images that are outliers, they would likely be classified wrongly and show up in that screening.
 
@@ -62,10 +61,10 @@ To summarize, there is diversity due to imperfect cropping and different handwri
 
 ### Algorithms and Techniques
 
-As discussed before, I will use convolutional neural networks to model the problem. My architecture follows the example from LeCun 1998 [^L_1998] (with some modifications) and consists of four types of layers:
+As discussed before, I will use convolutional neural networks to model the problem. My architecture follows the example from LeCun 1998 <sup>14</sup> (with some modifications) and consists of four types of layers:
 - *convolutional layers*: These layers can be interpreted as sets of filters sliding over images to detect relevant patterns. Each filter has a receptive field (say, a square of 5x5 pixels). Within this field, the layer behaves like an ordinary dense layer. The difference is that the same weights apply to many different fields. As an effect, a convolutional layer looks for the same patterns anywhere in an image.
 - *max-pooling*: These layers are used to aggregate outputs of other layers. Like convolutional layers, they have a receptive field. Within that field though, these layers do not behave apply a linear transformation. Instead, they apply an aggregation function. For max-pooling, that function is `max`. It will therefore output the maximum value within its field, discarding the other values.
-- *dropout*: These regularization layers are used to prevent overfitting. During training, a dropout layer will suppress activations of a randomly selected portion of nodes. This forces the network to use the remaining nodes for classification [^SGK_2014].
+- *dropout*: These regularization layers are used to prevent overfitting. During training, a dropout layer will suppress activations of a randomly selected portion of nodes. This forces the network to use the remaining nodes for classification <sup>19</sup>.
 - *dense classification layers*: These layers apply a linear transformation to the entire output of their previous layers, followed by a non-linearity (I will use the popular ReLU non-linearity). In the final dense layer, the output is fed into a softmax loss function.
 
 The entire architecture of my model looks as follows:
@@ -93,15 +92,15 @@ def build_model(num_filters, kernel_size, pool_size, dense_size):
                   metrics=['accuracy'])
 ```
 
-The architecture loosely follows the architecture of LeCun 1998 [^L_1998]. I use two convolutional layers, followed by max-pooling, followed by two dense layers. I use ReLUs as non-linearities, dropout at various levels to avoid overfitting and softmax loss since we do classification.
+The architecture loosely follows the architecture of LeCun 1998 <sup>14</sup>. I use two convolutional layers, followed by max-pooling, followed by two dense layers. I use ReLUs as non-linearities, dropout at various levels to avoid overfitting and softmax loss since we do classification.
 
-One difference to LeCun 1998 [^L_1998] is the use of ReLUs. These non-linearities did not exist at the time but are very popular nowadays. Thus, I chose them for this project. Another difference is dropout, which I use as a regularization strategy. Notice that I did not specify any L1 or L2 regularizers. I found dropout to be sufficient already during my initial experiments.
+One difference to LeCun 1998 <sup>14</sup> is the use of ReLUs. These non-linearities did not exist at the time but are very popular nowadays. Thus, I chose them for this project. Another difference is dropout, which I use as a regularization strategy. Notice that I did not specify any L1 or L2 regularizers. I found dropout to be sufficient already during my initial experiments.
 
-As an optimizer, I chose ADADELTA, which has been successfully applied for MNIST in the literature [^Z_2012]. When applying neural networks, it is often cumbersome to tune the learning rate to the problem at hand. If configured too high, the model will not converge to a local optimum. If set too low, it will converge very slowly. Many techniques have been developed to dynamically adjust the learning rate during training (e.g., Momentum [^RHW_1986] or ADAGRAD [^DHY_2011]). Using an approximation of the Hessian that can be computed efficiently (i.e., doubling compute time compared to vanilla SGD), the ADADELTA method can adjust learning rates automatically. Compare the technical report for details [^Z_2012]. The Keras documentation recommends to not change ADADELTA's parameters, which is why I left them at their defaults [^KERAS].
+As an optimizer, I chose ADADELTA, which has been successfully applied for MNIST in the literature <sup>17</sup>. When applying neural networks, it is often cumbersome to tune the learning rate to the problem at hand. If configured too high, the model will not converge to a local optimum. If set too low, it will converge very slowly. Many techniques have been developed to dynamically adjust the learning rate during training (e.g., Momentum <sup>15</sup> or ADAGRAD <sup>16</sup>). Using an approximation of the Hessian that can be computed efficiently (i.e., doubling compute time compared to vanilla SGD), the ADADELTA method can adjust learning rates automatically. Compare the technical report for details <sup>17</sup>. The Keras documentation recommends to not change ADADELTA's parameters, which is why I left them at their defaults <sup>18</sup>.
 
 ### Benchmark
 
-MNIST has been studied extensively in the literature, which is why plenty of benchmarks are available [^WIKI_MNIST]. As discussed before though, the dataset from Kaggle has a smaller training set and a larger test set as compared to the literature. Thus, I defined my benchmark in section "Problem Definition" above relative to the Kaggle leaderboard. I will optimize my model until I achieve a score of 0.99229, which means being in the Top100 on the leaderboard below the score at which Kaggle officials suspect cheating.
+MNIST has been studied extensively in the literature, which is why plenty of benchmarks are available <sup>5</sup>. As discussed before though, the dataset from Kaggle has a smaller training set and a larger test set as compared to the literature. Thus, I defined my benchmark in section "Problem Definition" above relative to the Kaggle leaderboard. I will optimize my model until I achieve a score of 0.99229, which means being in the Top100 on the leaderboard below the score at which Kaggle officials suspect cheating.
 
 ## III. Methodology
 
@@ -120,15 +119,15 @@ You can find the source code for this project here: [https://github.com/DominicB
 My implementation consists broadly of three parts:
 - Development: This is the main part of the project in which I developed, refined and evaluated the classifier.
 - HTTP-Server: This is a simple JSON API loading the neural network, accepting images via HTTP, and returning the predictions in the response body.
-- gRPC-Server: This is a more sophisticated gRPC server based on TensorFlow Serving [^TF_SERVING], which loads a model exported for use in TensorFlow. Like the HTTP-Server, it accepts images and returns predictions, but it is considerably harder to write a client.
+- gRPC-Server: This is a more sophisticated gRPC server based on TensorFlow Serving <sup>21</sup>, which loads a model exported for use in TensorFlow. Like the HTTP-Server, it accepts images and returns predictions, but it is considerably harder to write a client.
 
-Both the development and the two production environments are containerized using Docker. As an effect, the only dependency for running my code is Docker [^DOCKER]. In folder `/bin` you can find several scripts that show how to build Docker images and start Docker containers for the various parts of my implementation. Any developer who want's to work on my code can easily get started. Bringing the servers into production is very easy as well, e.g., using modern container runtimes such as Kubernetes [^KUBERNETES].
+Both the development and the two production environments are containerized using Docker. As an effect, the only dependency for running my code is Docker <sup>20</sup>. In folder `/bin` you can find several scripts that show how to build Docker images and start Docker containers for the various parts of my implementation. Any developer who want's to work on my code can easily get started. Bringing the servers into production is very easy as well, e.g., using modern container runtimes such as Kubernetes <sup>22</sup>.
 
-For development, I used Keras [^KERAS] as the main tool for building neural networks. Keras is a high-level abstraction on top of lower-level libraries such as Theano [^THEANO] or TensorFlow [^TENSORFLOW]. If you rely only on commonly available layers, developing in Keras will be easy and fast. Thus, it seemed most appropriate for my project. Besides Keras, I've also used Jupyter notebooks, pandas, matplotlib and other common Python libraries.
+For development, I used Keras <sup>32</sup> as the main tool for building neural networks. Keras is a high-level abstraction on top of lower-level libraries such as Theano <sup>23</sup> or TensorFlow <sup>24</sup>. If you rely only on commonly available layers, developing in Keras will be easy and fast. Thus, it seemed most appropriate for my project. Besides Keras, I've also used Jupyter notebooks, pandas, matplotlib and other common Python libraries.
 
 The biggest challenge during development was that training models took a long time on my laptop. I had to split my training sessions into several blocks of time, running it over night and using my laptop at daytime for other things. I therefore wrote disk caching functions to save intermediate results and keep going from where I stopped before.
 
-For the HTTP-based production server, I chose Flask [^FLASK], a Python-based microframework, as my main technology. It is perfect for building small web APIs fast. While I initially used Hug [^HUG] (a dedicated API framework, even simpler to use) I switched to Flask for it's Python 2 support. The gRPC-Server runs TensorFlow Serving
+For the HTTP-based production server, I chose Flask <sup>25</sup>, a Python-based microframework, as my main technology. It is perfect for building small web APIs fast. While I initially used Hug <sup>26</sup> (a dedicated API framework, even simpler to use) I switched to Flask for it's Python 2 support. The gRPC-Server runs TensorFlow Serving
 
 The biggest challenge with the HTTP-Server was to support multi-threading. In development, Flask will start two threads to support faster reload. In production, Flask can and should be run multi-threaded. Loading a huge neural network multiple times though is very inefficient. Hence, I saved the model into a global variable and wrapped the prediction into a TensorFlow graph context block to make it use this graph.
 
@@ -177,7 +176,7 @@ Applying the trained final model to the test dataset and submitting to Kaggle, i
 
 As described in the previous section, the final model accuracy on the Kaggle test data is 0.99229. As this result scores within the Top100 in the leaderboard, I consider the accuracy target met for this project. Below, I will focus on analyzing the properties of the final model in greater detail.
 
-An interesting aspect to look at are the filters learned by the convolutional layers. For the first convolutional layer, it is particularly easy to do so, since plotting model weights immediately delivers an interpretable representation. For deeper convolutional layers, specialized deconvolutional techniques would have to be applied which project activations back into the pixel space of the input images [^ZF_2014]. For this project, I focus only on first layer visualizations though.
+An interesting aspect to look at are the filters learned by the convolutional layers. For the first convolutional layer, it is particularly easy to do so, since plotting model weights immediately delivers an interpretable representation. For deeper convolutional layers, specialized deconvolutional techniques would have to be applied which project activations back into the pixel space of the input images <sup>27</sup>. For this project, I focus only on first layer visualizations though.
 
 before training | after training
 :--------:|:-------
@@ -185,7 +184,7 @@ before training | after training
 
 *Fig. 6.: Visualization of the filters in the first convolutional layer*
 
-In figure 6, you can see all 96 filters of the first convolutional layer visualized by plotting their weights (5x5 kernel size). On the left, you can see the weights immediately after initialization. As expected, they look mostly random as the initialization assigns randomly using Glorot initialization [^GB_2010]. On the right, you can see the weights after full training, i.e., after 9 epochs. Comparing to the weights before training, you can see the clear structures now visible in the kernel windows. Only very few filters still appear to be random. Most of them look like edges with a certain angle or curvature, others look like dots.
+In figure 6, you can see all 96 filters of the first convolutional layer visualized by plotting their weights (5x5 kernel size). On the left, you can see the weights immediately after initialization. As expected, they look mostly random as the initialization assigns randomly using Glorot initialization <sup>28</sup>. On the right, you can see the weights after full training, i.e., after 9 epochs. Comparing to the weights before training, you can see the clear structures now visible in the kernel windows. Only very few filters still appear to be random. Most of them look like edges with a certain angle or curvature, others look like dots.
 
 Another visualization can be found in figure 7. On the left, you can see an exemplary input image. On the right, you can find the activations of the feature map directly after the first convolutional layer. Comparing these to the filters of figure 6, you can clearly see correspondences. For instance, look at the filter in row 1 and column 5 of figure 6. It activates for horizontal edges in the upper part of the kernel window. Correspondingly, the activations in the feature map show greatest activity for the horizontal edges of the 8. More correspondences like this can be found.
 
@@ -195,7 +194,7 @@ input image | activations
 
 *Fig. 7.: Visualization of the activations in the feature map after the first convolutional layer*
 
-Visualizations like these do not only strengthen my confidence in the model but can also be used to explain the inner workings of neural networks to decision makers. In a business context, it is not only important to create well-performing prediction models, but also to build an understanding of how they work and what they do. If you fail to do so, you risk that decision makers will not trust the model and discard their use [^PF_2013].
+Visualizations like these do not only strengthen my confidence in the model but can also be used to explain the inner workings of neural networks to decision makers. In a business context, it is not only important to create well-performing prediction models, but also to build an understanding of how they work and what they do. If you fail to do so, you risk that decision makers will not trust the model and discard their use <sup>29</sup>.
 
 Finally, I present a visualization of all images in the validation set that the model failed to classify correctly. They can be found in figure 8 below. Above each image, you can see the true label. By analyzing the mistakes, we can better understand the shortcomings of the current model and generate ideas for further improvements.
 
@@ -211,13 +210,13 @@ Regarding how to further improve results, we can see that many of the images in 
 
 As written above, I consider my leaderboard score acceptable for this project. Comparing it to the Kaggle benchmark, which is 0.96557 accuracy for a KNN classifier, the result is also significantly better.
 
-To show the improvement statistically, I apply a t-test [^WIKI_TTEST] to compare the accuracies on the test data. This test compares the means of two datasets and can tell you if there is a significant difference between the two. To perform the test, you need for each dataset the mean, the standard deviation, and the size. The test will deliver a p-value which, if small (e.g., < 0.05), will prove that the difference in the means is significant.
+To show the improvement statistically, I apply a t-test <sup>30</sup> to compare the accuracies on the test data. This test compares the means of two datasets and can tell you if there is a significant difference between the two. To perform the test, you need for each dataset the mean, the standard deviation, and the size. The test will deliver a p-value which, if small (e.g., < 0.05), will prove that the difference in the means is significant.
 
 The accuracy of a classifier is the mean of the dataset that contains a 0 for wrong predictions and a 1 for correct predictions. There are exactly 42000 entries in each of the dataset as they were both computed on the 42000 test images. As we know the datasets can only contain 0s or 1s, we can deduce the standard deviations from the means and the sizes. For the KNN benchmark classifier, we have a mean of 0.96557, which results in a standard deviation of about 0.18239 (to check that, calculate the standard deviation of a dataset with 40553 1s and 1447 0s). Accordingly, my final model's mean is 0.99229, giving a standard deviation of about 0.08749. Applying these numbers to a t-test, it outputs a p-values < 0.0001, showing that the improvement is indeed statistically significant.
 
 In terms of practical applicability, I also consider the result a success. With almost all digits properly identified, you could apply the model with great confidence in a handwriting recognition system. To catch the remaining errors, you could build higher level sanity checks into the recognizer, either to nudge classifiers toward certain digits or to flag digits for manual review (if possible). Several options are available:
 - Domain-specific: depending on the application area, you could find certain rules that apply to numbers. For instance, if you parse prices of products, $9.99$ is a lot more likely that $9.69.
-- General: Certain rules about the statistical distribution of digits in numbers hold throughout many application domains. For instance, consider Benford's law [^WIKI_BENFORD], stating that the leading digit of any naturally occurring number is likely small.
+- General: Certain rules about the statistical distribution of digits in numbers hold throughout many application domains. For instance, consider Benford's law <sup>31</sup>, stating that the leading digit of any naturally occurring number is likely small.
 
 ## V. Conclusion
 
@@ -246,35 +245,66 @@ Improvements in many areas are conceivable:
 
 ## References
 
-[^WIKI_TABLET]: Wikipedia - History of tablet computers [link](https://en.wikipedia.org/wiki/History_of_tablet_computers#1980s)
-[^TSW_1990]: Tappert, Charles C., Ching Y. Suen, and Toru Wakahara. "The state of the art in online handwriting recognition." IEEE Transactions on pattern analysis and machine intelligence 12.8 (1990): 787-808.
-[^RS_2000]: Plamondon, Réjean, and Sargur N. Srihari. "Online and off-line handwriting recognition: a comprehensive survey." IEEE Transactions on pattern analysis and machine intelligence 22.1 (2000): 63-84.
-[^NIST_1995]: NIST Special Database 19 [link](https://www.nist.gov/sites/default/files/documents/srd/nistsd19.pdf)
-[^WIKI_MNIST]: Wikipedia - MNIST [link](https://en.wikipedia.org/wiki/MNIST_database)
-[^MB_2002]: Marti, U-V., and Horst Bunke. "The IAM-database: an English sentence database for offline handwriting recognition." International Journal on Document Analysis and Recognition 5.1 (2002): 39-46.
-[^GS_2009]: Graves, Alex, and Jürgen Schmidhuber. "Offline handwriting recognition with multidimensional recurrent neural networks." Advances in neural information processing systems. 2009.
-[^COMPETITION_2016]: ICFHR2016 Competition on Handwritten Text Recognition on the READ Dataset [link](http://transcriptorium.eu/~htrcontest/)
-[^SEARCHINK]: SearchInk - A new layer to search [link](http://searchink.com/)
-[^KAGGLE_MNIST]: Kaggle competition - Digit Recognizer [link](https://www.kaggle.com/c/digit-recognizer)
-[^ZF_2013]: Zeiler, Matthew D., and Rob Fergus. "Visualizing and understanding convolutional networks." European conference on computer vision. Springer International Publishing, 2014.
-[^^CS231N]: CS231n Convolutional Neural Networks for Visual Recognition [link](http://cs231n.github.io/understanding-cnn/)
-[^SKLEARN_CLASS_METRICS]: scikit-learn classficiation metrics [link](http://scikit-learn.org/stable/modules/model_evaluation.html#classification-metrics)
-[^L_1998]: LeCun, Yann, et al. "Gradient-based learning applied to document recognition." Proceedings of the IEEE 86.11 (1998): 2278-2324.
-[^RHW_1986]: D. E. Rumelhart, G. E. Hinton, and D. E. Williams. "Learning representations by back-propagating errors." Nature 323.6088 (1986): 533-538.
-[^DHY_2011]: Duchi, John, Elad Hazan, and Yoram Singer. "Adaptive subgradient methods for online learning and stochastic optimization." Journal of Machine Learning Research 12.Jul (2011): 2121-2159.
-[^Z_2012]: Zeiler, Matthew D. "ADADELTA: an adaptive learning rate method." arXiv preprint arXiv:1212.5701 (2012).
-[^KERAS]: Keras documentation on ADADELTA [link](https://keras.io/optimizers/#adadelta)
-[^SGK_2014]: Srivastava, Nitish, et al. "Dropout: a simple way to prevent neural networks from overfitting." Journal of Machine Learning Research 15.1 (2014): 1929-1958.
-[^DOCKER]: Docker home page: [link](https://www.docker.com/)
-[^TF_SERVING]: TensorFlow Serving homepage: [link](https://tensorflow.github.io/serving/)
-[^KUBERNETES]: Kubernetes homepage: [link](https://kubernetes.io/)
-[^KERAS]: Keras homepage: [link](https://keras.io/)
-[^THEANO]: Theano homepage: [link](http://deeplearning.net/software/theano/)
-[^TENSORFLOW]: TensorFlow homepage: [link](https://www.tensorflow.org/)
-[^FLASK]: Flask homepage: [link](http://flask.pocoo.org/)
-[^HUG]: Hug homepage: [link](https://github.com/timothycrosley/hug)
-[^ZF_2014]: Zeiler, Matthew D., and Rob Fergus. "Visualizing and understanding convolutional networks." European conference on computer vision. Springer International Publishing, 2014.
-[^GB_2010]: Glorot, Xavier, and Yoshua Bengio. "Understanding the difficulty of training deep feedforward neural networks." Aistats. Vol. 9. 2010.
-[^PF_2013]: Provost, Foster, and Tom Fawcett. Data Science for Business: What you need to know about data mining and data-analytic thinking. " O'Reilly Media, Inc.", 2013.
-[^WIKI_TTEST]: Wikipedia - Student's t-test [link](https://en.wikipedia.org/wiki/Student%27s_t-test)
-[^WIKI_BENFORD]: Wikipedia - Benford's law [link](https://en.wikipedia.org/wiki/Benford%27s_law)
+<sup>1</sup>: Wikipedia - History of tablet computers [link](https://en.wikipedia.org/wiki/History_of_tablet_computers#1980s)
+
+<sup>2</sup>: Tappert, Charles C., Ching Y. Suen, and Toru Wakahara. "The state of the art in online handwriting recognition." IEEE Transactions on pattern analysis and machine intelligence 12.8 (1990): 787-808.
+
+<sup>3</sup>: Plamondon, Réjean, and Sargur N. Srihari. "Online and off-line handwriting recognition: a comprehensive survey." IEEE Transactions on pattern analysis and machine intelligence 22.1 (2000): 63-84.
+
+<sup>4</sup>: NIST Special Database 19 [link](https://www.nist.gov/sites/default/files/documents/srd/nistsd19.pdf)
+
+<sup>5</sup>: Wikipedia - MNIST [link](https://en.wikipedia.org/wiki/MNIST_database)
+
+<sup>6</sup>: Marti, U-V., and Horst Bunke. "The IAM-database: an English sentence database for offline handwriting recognition." International Journal on Document Analysis and Recognition 5.1 (2002): 39-46.
+
+<sup>7</sup>: Graves, Alex, and Jürgen Schmidhuber. "Offline handwriting recognition with multidimensional recurrent neural networks." Advances in neural information processing systems. 2009.
+
+<sup>8</sup>: ICFHR2016 Competition on Handwritten Text Recognition on the READ Dataset [link](http://transcriptorium.eu/~htrcontest/)
+
+<sup>9</sup>: SearchInk - A new layer to search [link](http://searchink.com/)
+
+<sup>10</sup>: Kaggle competition - Digit Recognizer [link](https://www.kaggle.com/c/digit-recognizer)
+
+<sup>11</sup>: Zeiler, Matthew D., and Rob Fergus. "Visualizing and understanding convolutional networks." European conference on computer vision. Springer International Publishing, 2014.
+
+<sup>12</sup>: CS231n Convolutional Neural Networks for Visual Recognition [link](http://cs231n.github.io/understanding-cnn/)
+
+<sup>13</sup>: scikit-learn classficiation metrics [link](http://scikit-learn.org/stable/modules/model_evaluation.html#classification-metrics)
+
+<sup>14</sup>: LeCun, Yann, et al. "Gradient-based learning applied to document recognition." Proceedings of the IEEE 86.11 (1998): 2278-2324.
+
+<sup>15</sup>: D. E. Rumelhart, G. E. Hinton, and D. E. Williams. "Learning representations by back-propagating errors." Nature 323.6088 (1986): 533-538.
+
+<sup>16</sup>: Duchi, John, Elad Hazan, and Yoram Singer. "Adaptive subgradient methods for online learning and stochastic optimization." Journal of Machine Learning Research 12.Jul (2011): 2121-2159.
+
+<sup>17</sup>: Zeiler, Matthew D. "ADADELTA: an adaptive learning rate method." arXiv preprint arXiv:1212.5701 (2012).
+
+<sup>18</sup>: Keras documentation on ADADELTA [link](https://keras.io/optimizers/#adadelta)
+
+<sup>19</sup>: Srivastava, Nitish, et al. "Dropout: a simple way to prevent neural networks from overfitting." Journal of Machine Learning Research 15.1 (2014): 1929-1958.
+
+<sup>20</sup>: Docker home page: [link](https://www.docker.com/)
+
+<sup>21</sup>: TensorFlow Serving homepage: [link](https://tensorflow.github.io/serving/)
+
+<sup>22</sup>: Kubernetes homepage: [link](https://kubernetes.io/)
+
+<sup>23</sup>: Theano homepage: [link](http://deeplearning.net/software/theano/)
+
+<sup>24</sup>: TensorFlow homepage: [link](https://www.tensorflow.org/)
+
+<sup>25</sup>: Flask homepage: [link](http://flask.pocoo.org/)
+
+<sup>26</sup>: Hug homepage: [link](https://github.com/timothycrosley/hug)
+
+<sup>27</sup>: Zeiler, Matthew D., and Rob Fergus. "Visualizing and understanding convolutional networks." European conference on computer vision. Springer International Publishing, 2014.
+
+<sup>28</sup>: Glorot, Xavier, and Yoshua Bengio. "Understanding the difficulty of training deep feedforward neural networks." Aistats. Vol. 9. 2010.
+
+<sup>29</sup>: Provost, Foster, and Tom Fawcett. Data Science for Business: What you need to know about data mining and data-analytic thinking. " O'Reilly Media, Inc.", 2013.
+
+<sup>30</sup>: Wikipedia - Student's t-test [link](https://en.wikipedia.org/wiki/Student%27s_t-test)
+
+<sup>31</sup>: Wikipedia - Benford's law [link](https://en.wikipedia.org/wiki/Benford%27s_law)
+
+<sup>32</sup>: Keras homepage: [link](https://keras.io/)
