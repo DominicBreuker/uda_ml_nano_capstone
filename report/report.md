@@ -3,7 +3,7 @@
 Dominic Breuker  
 April 5th, 2017
 
-## I. Definition (1-2)
+## I. Definition
 
 ### Project Overview
 Handwriting recognition has a long-standing history in machine learning research. During the 1980s, the first commercial tablet products have been released by companies such as Pencept, Linus and even Apple [^WIKI_TABLET]. As a consequence, research interest in online handwriting recognition - the problem of recognizing characters as users write them with a pen - soared [^TSW_1990]. Online handwriting recognition provides a plethora of information beyond the mere writing you see on the device. Systems recorded a time sequence of coordinates as the pen was moved over the device. With such a rich signal, algorithms performed reasonably well to provide a decent user experience [^RS_2000].
@@ -26,7 +26,7 @@ I will use classification accuracy to measure the performance of my model for th
 
 As the problem is framed as a multi-class classification problem, not many alternatives to accuracy exist [^SKLEARN_CLASS_METRICS]. For example, Cohen's Kappa could be used instead to measure how much better the classifier is compared to random guessing. For problems in which random guessing would already produce high accuracies, Cohen's Kappa can avoid to mistakenly get too excited about classification performance. For the given problem though, random guessing accuracy (0.1) is considerably lower than what we aim for (> 0.99). Moreover, the Kaggle leaderboard evaluates accuracy, which is another reason to adopt this measure.
 
-## II. Analysis (2-4)
+## II. Analysis
 
 ### Data Exploration
 Data from Kaggle comes conveniently in form of two CSV files, one for training and the other for testing [^KAGGLE_MNIST]. In the training dataset, there are 42.000 rows and 785 columns. Each row corresponds to one example digit. The first column is the class label (0-9), the remaining 784 columns are pixel values (0-255) of the `28 * 28 = 784` images of the corresponding handwritten digit. The test set contains 28.000 rows and 784 columns. For the test set, all `28 * 28 = 784` columns are pixel values (0-255) of the image. There is no class label available.
@@ -103,7 +103,7 @@ As an optimizer, I chose ADADELTA, which has been successfully applied for MNIST
 
 MNIST has been studied extensively in the literature, which is why plenty of benchmarks are available [^WIKI_MNIST]. As discussed before though, the dataset from Kaggle has a smaller training set and a larger test set as compared to the literature. Thus, I defined my benchmark in section "Problem Definition" above relative to the Kaggle leaderboard. I will optimize my model until I achieve a score of 0.99229, which means being in the Top100 on the leaderboard below the score at which Kaggle officials suspect cheating.
 
-## III. Methodology (3-5)
+## III. Methodology
 
 ### Data Preprocessing
 
@@ -172,7 +172,6 @@ After choosing the best performing model as the final model, I trained the model
 Applying the trained final model to the test dataset and submitting to Kaggle, it delivered an accuracy of 0.99229 - exactly the target accuracy. Hence, I consider the solution acceptable for this project. Nevertheless, since we do not see any performance decrease with increased model complexity in figure 4, any further increase of model complexity could and likely would further increase performance. However, I decided against further improvements for this project.
 
 ## IV. Results
-_(approx. 2-3 pages)_
 
 ### Model Evaluation and Validation
 
@@ -221,44 +220,29 @@ In terms of practical applicability, I also consider the result a success. With 
 - General: Certain rules about the statistical distribution of digits in numbers hold throughout many application domains. For instance, consider Benford's law [^WIKI_BENFORD], stating that the leading digit of any naturally occurring number is likely small.
 
 ## V. Conclusion
-_(approx. 1-2 pages)_
 
 ### Free-Form Visualization
-In this section, you will need to provide some form of visualization that emphasizes an important quality about the project. It is much more free-form, but should reasonably support a significant result or characteristic about the problem that you want to discuss. Questions to ask yourself when writing this section:
-- _Have you visualized a relevant or important quality about the problem, dataset, input data, or results?_
-- _Is the visualization thoroughly analyzed and discussed?_
-- _If a plot is provided, are the axes, title, and datum clearly defined?_
+
+My plan for this project was to go through a typical machine learning development process from the beginning to the end. In figure 9, I have summarized the process as I see it. It started with getting the data from Kaggle and exploring it to make sure it is clean. I went on splitting the training data into train and validation sets to be able to compare different classifiers against each other. Before training classifiers though, I have further augmented the data in ways that simulate dirty handwriting to ensure my classifiers are as robust as possible. To compare models, I've trained models initially only for few epochs, assuming that their relative validation accuracies after short training are indicative for what they would be at convergence. After selecting the best of the candidate models, I trained that model until I was sure it converged. Visualizing its properties fostered my confidence in the model's quality and my understanding of convolutional neural networks in general. Applying the model to the test data and submitting to Kaggle, the model scored much better than the Kaggle benchmarks. More importantly, it met the performance goal I defined earlier. I went on implementing two servers that would allow to delpoy my models to a production environment. One server is easier to implement and integrate but will serve predictions inefficiently, the other is more efficient yet would require more integration effort.
+
+![figure 9](images/fig9.png)
+
+*Fig. 9.: Visualization of the process applied in this project*
 
 ### Reflection
-In this section, you will summarize the entire end-to-end problem solution and discuss one or two particular aspects of the project you found interesting or difficult. You are expected to reflect on the project as a whole to show that you have a firm understanding of the entire process employed in your work. Questions to ask yourself when writing this section:
-- _Have you thoroughly summarized the entire process you used for this project?_
-- _Were there any interesting aspects of the project?_
-- _Were there any difficult aspects of the project?_
-- _Does the final model and solution fit your expectations for the problem, and should it be used in a general setting to solve these types of problems?_
+
+In this project, I successfully developed a classification model based on convolutional neural networks, visualized and analyzed it's properties, and built two versions of servers that would allow using the model in a companies production environment. The models scored within the Top100 on Kaggle's public leaderboard (after removing those submissions that Kaggle flags as likely involving cheating).
+
+For me, the most interesting part of this project was creating and analyzing the visualizations I discussed in the section on model evaluation and validation. Convolutional neural networks sound like a very complicated topic when you read about them. Building them and then analyzing their properties made me more confident in explaining how and why they work.
+
+The most challenging part was to work around limitations regarding computation times. While it is easy to pick up Keras by applying examples seen in code examples, programming proper model comparison and validation code that caches intermediate results turned out to be very important to make progress. Saving results in a structured form greatly facilitated my overview of the results up to the current point. If I would have followed my unstructured workflows from preliminary experimentation before this project, I would not have been able to write this report.
 
 ### Improvement
 
-Improvements in all areas are possible:
-- Model performance: my model comparison suggests more complex models would further increase performance. Improvements of accuracy are likely achievable by comparing more parameter configurations. I would do so until an increase in complexity would actually lead to overfitting, i.e., increasing training accuracy but decreasing validation accuracy. Moreover, the evaluation section revealed that misclassified images share certain features, most importantly very thick or very thin strokes. This suggests that further applying according preprocessing techniques to increase the prevalence of these features in the training data could improve performance.
-- Visualization and understanding: I only visualized model weights of the first convolutional layers. With deconvolutional techniques, I would further extend this analysis to higher layers of the network to find out what images activate nodes in those layers. These visualizations would likely facilitate my understanding of convolutional neural networks considerably.
-- Implementation: my servers for the final model are working and could be deployed easily, yet they are nothing more than proof of concept implementations. I see at least three possible areas of improvement. First, adding tests would be an obvious next step to keep the code maintainable. Second, more functionality (e.g., batch predictions) would make the servers more versatile. Third, client libraries should be created to allow other developers to easily integrate with the prediction model.
-
-In this section, you will need to provide discussion as to how one aspect of the implementation you designed could be improved. As an example, consider ways your implementation can be made more general, and what would need to be modified. You do not need to make this improvement, but the potential solutions resulting from these changes are considered and compared/contrasted to your current solution. Questions to ask yourself when writing this section:
-- _Are there further improvements that could be made on the algorithms or techniques you used in this project?_
-- _Were there algorithms or techniques you researched that you did not know how to implement, but would consider using if you knew how?_
-- _If you used your final solution as the new benchmark, do you think an even better solution exists?_
-
------------
-
-**Before submitting, ask yourself. . .**
-
-- Does the project report you’ve written follow a well-organized structure similar to that of the project template?
-- Is each section (particularly **Analysis** and **Methodology**) written in a clear, concise and specific fashion? Are there any ambiguous terms or phrases that need clarification?
-- Would the intended audience of your project be able to understand your analysis, methods, and results?
-- Have you properly proof-read your project report to assure there are minimal grammatical and spelling mistakes?
-- Are all the resources used for this project correctly cited and referenced?
-- Is the code that implements your solution easily readable and properly commented?
-- Does the code execute without error and produce results similar to those reported?
+Improvements in many areas are conceivable:
+- *Model performance:* my model comparison suggests more complex models would further increase performance. Improvements of accuracy are likely achievable by comparing more parameter configurations. I would do so until an increase in complexity would actually lead to overfitting, i.e., increasing training accuracy but decreasing validation accuracy. Moreover, the evaluation section revealed that misclassified images share certain features, most importantly very thick or very thin strokes. This suggests that further applying according preprocessing techniques to increase the prevalence of these features in the training data could improve performance.
+- *Visualization and understanding:* I only visualized model weights of the first convolutional layers. With deconvolutional techniques, I would further extend this analysis to higher layers of the network to find out what images activate nodes in those layers. These visualizations would likely facilitate my understanding of convolutional neural networks considerably.
+- *Implementation and deployment:* my servers for the final model are working and could be deployed easily, yet they are nothing more than proof of concept implementations. I see at least three possible areas of improvement. First, adding tests would be an obvious next step to keep the code maintainable. Second, more functionality (e.g., batch predictions) would make the servers more versatile. Third, client libraries should be created to allow other developers to easily integrate with the prediction model.
 
 ## References
 
